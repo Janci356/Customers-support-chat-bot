@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Catalyst.Models.English" Version="1.0.30952" />
     <PackageReference Include="Catalyst.Spacy" Version="1.0.40904" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.13" />
   </ItemGroup>
 
 </Project>
