@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Customers_support_chat_bot;
+namespace Customers_support_chat_bot.Models;
 
 public class User
 {

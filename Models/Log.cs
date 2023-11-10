@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Customers_support_chat_bot;
+namespace Customers_support_chat_bot.Models;
 
 public class Log
 {

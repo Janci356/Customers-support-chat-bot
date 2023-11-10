@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Customers_support_chat_bot;
+namespace Customers_support_chat_bot.Models;
 public class Chat
 {
     public int ChatId { get; set; } // Primary key
