@@ -17,6 +17,28 @@ public class Chat
 
     public virtual User User { get; set; } = null!;
 
+
+    //----------------------------------------------------------------------------------------
+    // UPDATE LAST CHANGED TIME
+
+    public void UpdateLastChangedAt()
+    {
+        LastChangedAt = DateTime.UtcNow;
+    }
+
+    //----------------------------------------------------------------------------------------
+    // GET CHAT BY ID
+
+    // Find chat by ChatId, return Chat or null
+    public static Chat? FindById(DbContext dbContext, int chatId)
+    {
+        return dbContext.Set<Chat>().Find(chatId);
+    }
+
+
+    //----------------------------------------------------------------------------------------
+    // SAVE CHAT TO DB
+
     public int SaveChat(DbContext dbContext)
     {
         try

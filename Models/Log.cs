@@ -17,6 +17,19 @@ public class Log
 
     public virtual User User { get; set; } = null!;
 
+
+    //----------------------------------------------------------------------------------------
+    // GET LOG BY ID
+
+    // Find log by LogId, return Log or null
+    public static Log? FindById(DbContext dbContext, int logId)
+    {
+        return dbContext.Set<Log>().Find(logId);
+    }
+
+    //----------------------------------------------------------------------------------------
+    // SAVE LOG TO DB
+
     public int SaveLog(DbContext dbContext)
     {
         try
@@ -30,4 +43,6 @@ public class Log
             return -1;
         }
     }
+
+
 }
