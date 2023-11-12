@@ -41,7 +41,7 @@ public class User
             return false;
             
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }
@@ -69,7 +69,7 @@ public class User
             return false;
 
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }
@@ -136,8 +136,8 @@ public class User
     // ADD LOG AND CHAT TO USER AND DB
 
     // Method to add a log to the user's Logs collection and save to the database
-    // if not success returns false
-    public Boolean AddLogToUserAndDB(DbContext dbContext, Log newLog)
+    // returns LogId or -1
+    public int AddLogToUserAndDB(DbContext dbContext, Log newLog)
     {
             // Set the user ID for the new log
             newLog.UserId = this.UserId;
@@ -145,22 +145,23 @@ public class User
             // Add the chat to the user's Chats collection
             Logs.Add(newLog);
 
-            // Save into DB and return false or true
-            return newLog.SaveLog(dbContext)!=-1;
+        // Save into DB and return false or true
+        return newLog.SaveLog(dbContext);
 
     }
     // Saves Chat into DB and into Users collection Chats
-    // if not success returns false
-    public Boolean AddChatToUserAndDB(DbContext dbContext, Chat newChat)
+    // if not success returns -1, else ChatId
+    public int AddChatToUserAndDB(DbContext dbContext, Chat newChat)
     {
         // Set the user ID for the new chat
         newChat.UserId = this.UserId;
+        newChat.User = this;
 
         // Add the chat to the user's Chats collection
         Chats.Add(newChat);
 
         // Save into DB and return false or true
-        return newChat.SaveChat(dbContext) != -1;
+        return newChat.SaveChat(dbContext);
     }
 
 }
