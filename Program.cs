@@ -5,12 +5,18 @@ using Customers_support_chat_bot.Models;
 using HtmlAgilityPack;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
+using System;
+using System.Linq;
+using Microsoft.ML;
 
 class Program
 {
     // Function to create a new user with the given parameters and save to the database
     private static int CreateUser(DbContext dbContext, string login, string password)
     {
+        // if login is already taken
+        if (GetUser(dbContext, login) != null) return -1;
+
         // Create a new user
         User newUser = new User
         {
@@ -22,31 +28,44 @@ class Program
         return newUser.SaveUser(dbContext);
     }
 
-    // Save the log to the database and user, If User isn't in db return null,
-    // if can't save log into db return -1 
+    // Save the log to the database and user, If User isn't in db or can't save log into db return -1 
     // return LogId if success
-    private static int? CreateLog(DbContext dbContext,int userId, string logPath)
+    private static int CreateLog(DbContext dbContext,int userId, string logPath)
     {
+        var user = User.FindById(dbContext, userId);
+
+        if (user == null)
+        {
+            //Console.WriteLine($"User with ID {userId} not found.");
+            return -1; // or throw an exception, depending on your error handling strategy
+        }
+
         // Create a new log
         Log newLog = new Log
         {
             LogPath = logPath
         };
-        return User.FindById(dbContext, userId)?.AddLogToUserAndDB(dbContext, newLog);        
+        return user.AddLogToUserAndDB(dbContext, newLog);        
     }
 
 
-    // Save the chat to the database and user, If User isn't in db return null,
-    // if can't save chat into db return -1 
+    // Save the chat to the database and user, If User isn't in db  or can't save chat into db return -1 
     // return ChatId if success
-    private static int? CreateChat(DbContext dbContext, int userId, string chatPath)
+    private static int CreateChat(DbContext dbContext, int userId, string chatPath)
     {
+        var user = User.FindById(dbContext, userId);
+
+        if (user == null)
+        {
+            //Console.WriteLine($"User with ID {userId} not found.");
+            return -1; // or throw an exception, depending on your error handling strategy
+        }
         Chat newChat = new Chat
         {
             ChatPath = chatPath
         };
 
-        return User.FindById(dbContext, userId)?.AddChatToUserAndDB(dbContext, newChat);
+        return user.AddChatToUserAndDB(dbContext, newChat);
     }
 
     // Get All logs from db for given userid, If User isn't in db return null,
@@ -139,5 +158,13 @@ class Program
         var userInput = Console.ReadLine();
         IDocument processedInput = await model.Process(userInput is null ? "" : userInput);
         Console.Write(processedInput.ToJson());
+
+        using (var context = new UserDbContext())
+        {
+            // to reset db entries from Context file uncomment line below:
+            // context.Database.EnsureDeleted();
+
+            context.Database.EnsureCreated();
+        }
     }
 }
