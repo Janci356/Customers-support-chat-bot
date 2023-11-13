@@ -144,7 +144,6 @@ public class User
 
             // Add the chat to the user's Chats collection
             Logs.Add(newLog);
-
         // Save into DB and return false or true
         return newLog.SaveLog(dbContext);
 
