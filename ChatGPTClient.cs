@@ -45,12 +45,12 @@ namespace Customers_support_chat_bot
                 request.AddJsonBody(JsonConvert.SerializeObject(requestBody));
 
                 string jsonRequest = JsonConvert.SerializeObject(request, Formatting.Indented);
-                File.WriteAllText("C:\\Users\\jmiku\\OneDrive\\Desktop\\ASOS\\requests tmp\\request.json", jsonRequest);
+                //File.WriteAllText("C:\\Users\\jmiku\\OneDrive\\Desktop\\ASOS\\requests tmp\\request.json", jsonRequest);
 
                 var response = _client.Execute<RestClient>(request);
 
                 string jsonresponse = JsonConvert.SerializeObject(response, Formatting.Indented);
-                File.WriteAllText("C:\\Users\\jmiku\\OneDrive\\Desktop\\ASOS\\responses tmp\\response.json", jsonresponse);
+                //File.WriteAllText("C:\\Users\\jmiku\\OneDrive\\Desktop\\ASOS\\responses tmp\\response.json", jsonresponse);
 
                 var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content ?? string.Empty);
 
