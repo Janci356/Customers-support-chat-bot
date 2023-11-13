@@ -11,6 +11,8 @@
   <ItemGroup>
     <PackageReference Include="Catalyst.Models.English" Version="1.0.30952" />
     <PackageReference Include="Catalyst.Spacy" Version="1.0.40904" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="RestSharp" Version="110.2.1-alpha.0.16" />
   </ItemGroup>
 
 </Project>
