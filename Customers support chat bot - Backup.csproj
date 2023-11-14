@@ -11,9 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Catalyst.Models.English" Version="1.0.30952" />
     <PackageReference Include="Catalyst.Spacy" Version="1.0.40904" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.13" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="OpenAI" Version="1.7.2" />
     <PackageReference Include="RestSharp" Version="110.2.1-alpha.0.16" />
   </ItemGroup>
 
