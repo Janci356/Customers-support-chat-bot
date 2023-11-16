@@ -70,7 +70,7 @@ namespace Customers_support_chat_bot
 
 
         // Here add API key
-        private OpenAIAPI _api = new OpenAIAPI(new APIAuthentication("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"));
+        private OpenAIAPI _api = new OpenAIAPI(new APIAuthentication(""));
         private OpenAI_API.Chat.Conversation _conversation { get;  }
         private ConversationHistory _conversationHistory { get; }
         public ChatGPTClient()
