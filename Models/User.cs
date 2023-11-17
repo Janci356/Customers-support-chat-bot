@@ -106,7 +106,7 @@ public class User
             dbContext.SaveChanges();
             return this.UserId; // Assuming UserId is set by the database after insertion
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             return -1;
         }
