@@ -75,13 +75,13 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             }
         }
 
-        public String Username { get; set; }
+        public String? Username { get; set; }
 
-        public String Password { private get; set; }
+        public String? Password { private get; set; }
 
         public int UserId { get; set; }
 
-        public String ChatLogName { get; set; }
+        public String? ChatLogName { get; set; }
 
 
         public MainViewModel()
@@ -94,7 +94,7 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             
 
             DbContext = new UserDbContext();
-            DbContext.Database.EnsureDeleted();
+            //DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
 
             MessagesEnabled = false;
@@ -117,6 +117,7 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                     };
 
                     Messages.Add(NewMessage);
+                    Message = "";
                     gettingResponse = true;
                     try
                     {
@@ -139,30 +140,47 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                             };
                             Messages.Add(BotMessage);
                         }
+                        else
+                        {
+                            //TODO
+                            //Log exception
+                        }
+                    }catch(Exception ex)
+                    {
+                        //TODO
+                        //Log Exception
                     }
                     gettingResponse= false;
-                    Message = "";
+                    
                 }
             });
 
             LoginCommand = new RelayCommand(o =>
             {
-            if (!String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Password)) 
-                { 
-                    UserId = Program.CreateUser(DbContext, Username, Password); 
-                    if(UserId == -1)
+            if (!String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Password))
+                {
+                    try
                     {
-                        // TODO
+                        UserId = Program.CreateUser(DbContext, Username, Password);
+                        if (UserId == -1)
+                        {
+                            // TODO
+                            // User already exists
+                        }
+                        else
+                        {
+                            LoginVisibility = Visibility.Hidden;
+                            LoggedIn = Visibility.Visible;
+                            MessagesEnabled = true;
+                            ChatLogName = "./ChatLogs/" + Username + "_" + UserId + "_" + DateTime.Now.Ticks + ".json";
+                            ChatLogFile = File.CreateText(ChatLogName);
+                            ChatLogFile.AutoFlush = true;
+                        }
+                    }catch (Exception ex) {
+                        //TODO
+                        // Log exception
                     }
-                    else
-                    {
-                        LoginVisibility = Visibility.Hidden;
-                        LoggedIn = Visibility.Visible;
-                        MessagesEnabled = true;
-                        ChatLogName = "./ChatLogs/" + Username + "_" + UserId + "_" + DateTime.Now.Ticks + ".json";
-                        ChatLogFile = File.CreateText(ChatLogName);
-                        ChatLogFile.AutoFlush = true;
-                    }
+                    
                 }
             });
 
@@ -171,8 +189,17 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                 if(ChatLogFile != null && Messages.Count != 0)
                 {
                     ChatLogFile.Write(JsonSerializer.Serialize(Messages));
-                    var response = Program.CreateChat(DbContext, UserId, ChatLogName);
-                    Console.WriteLine();
+                    try
+                    {
+                        var response = Program.CreateChat(DbContext, UserId, ChatLogName);
+                        Console.WriteLine();
+                    }
+                    catch (Exception ex) { 
+                        //TODO 
+                        //Log exception
+                    }
+                    
+                    
                 }
                 Application.Current.Shutdown();
             });
