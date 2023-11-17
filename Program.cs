@@ -77,14 +77,14 @@ class Program
     // If user hasn't got logs, return empty (i think)
     public static IEnumerable<Log>? GetUserLogs(DbContext dbContext, int userId)
     {
-        return User.FindById(dbContext, userId)?.GetLogs();
+        return User.FindById(dbContext, userId)?.GetLogs(dbContext);
     }
 
     // Get All chats from db for given userid, If User isn't in db return null,
     // If user hasn't got chats return empty (i think)
     public static IEnumerable<Chat>? GetUserChats(DbContext dbContext, int userId)
     {
-        return User.FindById(dbContext, userId)?.GetChats();
+        return User.FindById(dbContext, userId)?.GetChats(dbContext);
     }
 
     // Get user by id

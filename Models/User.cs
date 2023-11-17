@@ -129,17 +129,15 @@ public class User
     // GET LOGS AND CHATS FOR USER
 
     // Method to get all logs for a given UserId
-    public IEnumerable<Log> GetLogs()
+    public IEnumerable<Log> GetLogs(DbContext dbContext)
     {
-        //return dbContext.Set<Log>().Where(l => l.UserId == UserId).ToList();
-        return Logs;
+        return dbContext.Set<Log>().Where(l => l.UserId == UserId).ToList();
     }
 
     // Method to get all logs for a given UserId
-    public IEnumerable<Chat> GetChats()
+    public IEnumerable<Chat> GetChats(DbContext dbContext)
     {
-        //return dbContext.Set<Chat>().Where(l => l.UserId == UserId).ToList();
-        return Chats;
+        return dbContext.Set<Chat>().Where(l => l.UserId == UserId).ToList();
     }
 
 
