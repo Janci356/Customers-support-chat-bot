@@ -100,7 +100,7 @@ namespace Customers_support_chat_bot
                 this._conversationHistory.AddBotMessage(response);
             }catch (Exception e)
             {
-                throw new ChatGPTClientException("Exception thrown during communication with remote ChatGPT service.", e);
+                throw new ChatGPTClientException(e.Message, e);
             }
 
             return response;

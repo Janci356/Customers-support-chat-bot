@@ -1,10 +1,12 @@
 ﻿using Customers_support_chat_bot.Core;
+using Customers_support_chat_bot.Exceptions;
 using Customers_support_chat_bot.MVVM.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Customers_support_chat_bot.MVVM.ViewModel
 {
@@ -98,10 +100,11 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             MessagesEnabled = false;
             LoginVisibility = Visibility.Visible;
             LoggedIn = Visibility.Hidden;
+            bool gettingResponse = false;
 
             SendCommand = new RelayCommand(async o =>
             {
-                if(Message != "" && Message != null)
+                if(Message != "" && Message != null && !gettingResponse)
                 {
                     var NewMessage = new MessageModel
                     {
@@ -114,26 +117,30 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                     };
 
                     Messages.Add(NewMessage);
-
-                    var response = await Client.Ask(Message);
-
-                    if(response.Contains("code: TooManyRequests"))
+                    gettingResponse = true;
+                    try
                     {
-                        var StartIndex = response.IndexOf("\"message\": \"") + 12;
-                        var EndIndex = response.IndexOf("\"", StartIndex);
-                        var Msg = response.Substring(StartIndex, EndIndex - StartIndex);
-                        var BotMessage = new MessageModel
+                        var response = await Client.Ask(Message);
+                    }catch(ChatGPTClientException ex)
+                    {
+                        if (ex.Message.Contains("code: TooManyRequests"))
                         {
-                            Username = "ChatBot",
-                            ImageSource = "./Icons/bot.png",
-                            Message = Msg,
-                            Time = DateTime.Now,
-                            IsNativeOrigin = false,
-                            FirstMessage = true
-                        };
-                        Messages.Add(BotMessage);
+                            var StartIndex = ex.Message.IndexOf("\"message\": \"") + 12;
+                            var EndIndex = ex.Message.IndexOf("\"", StartIndex);
+                            var Msg = ex.Message.Substring(StartIndex, EndIndex - StartIndex);
+                            var BotMessage = new MessageModel
+                            {
+                                Username = "ChatBot",
+                                ImageSource = "./Icons/bot.png",
+                                Message = Msg,
+                                Time = DateTime.Now,
+                                IsNativeOrigin = false,
+                                FirstMessage = true
+                            };
+                            Messages.Add(BotMessage);
+                        }
                     }
-
+                    gettingResponse= false;
                     Message = "";
                 }
             });
