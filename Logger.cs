@@ -1,4 +1,5 @@
 using Serilog;
+using Serilog.Formatting.Json;
 
 namespace Customers_support_chat_bot;
 
@@ -11,7 +12,9 @@ public class Logger
     {
         _logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
-            .WriteTo.File("../../../logs/log.txt", rollingInterval: RollingInterval.Day)
+            .WriteTo.File(new JsonFormatter(),
+                "../../../logs/log.txt", 
+                rollingInterval: RollingInterval.Day)
             .CreateLogger();
     }
 
@@ -27,11 +30,11 @@ public class Logger
 
     public void LogInformation(string message)
     {
-        Task.Run(() => _logger.Information(message)); // Log in the background
+        Task.Run(() => _logger.Information(message));
     }
 
     public void LogError(string message)
     {
-        Task.Run(() => _logger.Error(message)); // Log in the background
+        Task.Run(() => _logger.Error(message));
     }
 }

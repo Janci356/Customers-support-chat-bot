@@ -8,7 +8,7 @@ public class Log
 {
     public int LogId { get; set; } // Primary key
 
-    public string? LogPath { get; set; }
+    public string? message { get; set; }
 
     public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
