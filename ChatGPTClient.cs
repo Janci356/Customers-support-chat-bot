@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using OpenAI_API;
 using RestSharp;
 using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -70,18 +71,18 @@ namespace Customers_support_chat_bot
             }*/
 
 
-        // Here add API key
-        private OpenAIAPI _api = new OpenAIAPI(new APIAuthentication(""));
+        
+        private OpenAIAPI _api = new OpenAIAPI(new APIAuthentication(ConfigurationManager.AppSettings["ChatGPTKey"]));
         private OpenAI_API.Chat.Conversation _conversation { get;  }
         private ConversationHistory _conversationHistory { get; }
         public ChatGPTClient()
         {
             try
             {
-                this._conversation = this._api.Chat.CreateConversation();
-                this._conversationHistory = new ConversationHistory();
+            this._conversation = this._api.Chat.CreateConversation();
+            this._conversationHistory = new ConversationHistory();
                 this._conversation.Model = OpenAI_API.Models.Model.ChatGPTTurbo;
-                this._conversation.AppendSystemMessage("You are customers support. Never give general answers. You don't have particullar product or application you would respond for accordingly, therefor make up your answers. If you can't give made up answer say: \"I'm not able to help you with this problem. I will move your answer to administrators.\"");
+            this._conversation.AppendSystemMessage("You are customers support. Never give general answers. You don't have particullar product or application you would respond for accordingly, therefor make up your answers. If you can't give made up answer say: \"I'm not able to help you with this problem. I will move your answer to administrators.\"");
             }catch (Exception e) 
             {
                 throw new ChatGPTClientException("Exception thrown during ChatGPT client instantiation.", e);

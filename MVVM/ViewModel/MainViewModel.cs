@@ -2,6 +2,10 @@
 using Customers_support_chat_bot.MVVM.Model;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text.Json;
+using System.Windows;
+
 namespace Customers_support_chat_bot.MVVM.ViewModel
 {
     internal class MainViewModel : ObservableObject
@@ -9,7 +13,20 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
 
         public ObservableCollection<MessageModel> Messages { get; set; }
 
+        private UserDbContext DbContext { get; set; }
+
+        private ChatGPTClient Client {  get; set; } 
+
+        private StreamWriter ChatLogFile {  get; set; }
+    
+
+        /* Commands*/
         public RelayCommand SendCommand { get; set; }
+
+        public RelayCommand LoginCommand { get; set; }
+
+        public RelayCommand CloseCommand { get; set; }
+
 
         private string _message;
 
@@ -23,51 +40,135 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             }
         }
 
+        private bool _messagesEnabled;
+
+        public bool MessagesEnabled
+        {
+            get { return _messagesEnabled; }
+            set { 
+                _messagesEnabled = value;
+                OnPropertyChanged("");
+            }
+        }
+
+        private Visibility _loginVisibility;
+
+        public Visibility LoginVisibility
+        {
+            get { return _loginVisibility; }
+            set {
+                _loginVisibility = value;
+                OnPropertyChanged("LoginVisibility");    
+            }
+        }
+
+        private Visibility _loggedIn;
+
+        public Visibility LoggedIn
+        {
+            get { return _loggedIn; }
+            set {
+                _loggedIn = value;
+                OnPropertyChanged("LoggedIn");
+            }
+        }
+
+        public String Username { get; set; }
+
+        public String Password { private get; set; }
+
+        public int UserId { get; set; }
+
+        public String ChatLogName { get; set; }
+
 
         public MainViewModel()
         {
             Messages = new ObservableCollection<MessageModel>();
 
-            SendCommand = new RelayCommand(o =>
+            Client = new ChatGPTClient();
+
+            Directory.CreateDirectory("./ChatLogs");
+            
+
+            DbContext = new UserDbContext();
+            DbContext.Database.EnsureDeleted();
+            DbContext.Database.EnsureCreated();
+
+            MessagesEnabled = false;
+            LoginVisibility = Visibility.Visible;
+            LoggedIn = Visibility.Hidden;
+
+            SendCommand = new RelayCommand(async o =>
             {
                 if(Message != "" && Message != null)
                 {
-                    Messages.Add(new MessageModel
+                    var NewMessage = new MessageModel
                     {
-                        Username = "Tomas",
+                        Username = Username,
                         ImageSource = "./Icons/user.png",
                         Message = Message,
                         Time = DateTime.Now,
                         IsNativeOrigin = true,
                         FirstMessage = true
-                    });
+                    };
+
+                    Messages.Add(NewMessage);
+
+                    var response = await Client.Ask(Message);
+
+                    if(response.Contains("code: TooManyRequests"))
+                    {
+                        var StartIndex = response.IndexOf("\"message\": \"") + 12;
+                        var EndIndex = response.IndexOf("\"", StartIndex);
+                        var Msg = response.Substring(StartIndex, EndIndex - StartIndex);
+                        var BotMessage = new MessageModel
+                        {
+                            Username = "ChatBot",
+                            ImageSource = "./Icons/bot.png",
+                            Message = Msg,
+                            Time = DateTime.Now,
+                            IsNativeOrigin = false,
+                            FirstMessage = true
+                        };
+                        Messages.Add(BotMessage);
+                    }
 
                     Message = "";
                 }
             });
 
-            Messages.Add(new MessageModel
+            LoginCommand = new RelayCommand(o =>
             {
-                Username = "Tomas",
-                ImageSource = "./Icons/user.png",
-                Message = "Test message",
-                Time = DateTime.Now,
-                IsNativeOrigin = false,
-                FirstMessage = true,
+            if (!String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Password)) 
+                { 
+                    UserId = Program.CreateUser(DbContext, Username, Password); 
+                    if(UserId == -1)
+                    {
+                        // TODO
+                    }
+                    else
+                    {
+                        LoginVisibility = Visibility.Hidden;
+                        LoggedIn = Visibility.Visible;
+                        MessagesEnabled = true;
+                        ChatLogName = "./ChatLogs/" + Username + "_" + UserId + "_" + DateTime.Now.Ticks + ".json";
+                        ChatLogFile = File.CreateText(ChatLogName);
+                        ChatLogFile.AutoFlush = true;
+                    }
+                }
             });
 
-            for (int i = 0; i < 3; i++)
+            CloseCommand = new RelayCommand(o =>
             {
-                Messages.Add(new MessageModel
+                if(ChatLogFile != null && Messages.Count != 0)
                 {
-                    Username = "Tomas",
-                    ImageSource = "./Icons/user.png",
-                    Message = "Test message",
-                    Time = DateTime.Now,    
-                    IsNativeOrigin = false,
-                    FirstMessage = true,
-                });
-            }
+                    ChatLogFile.Write(JsonSerializer.Serialize(Messages));
+                    var response = Program.CreateChat(DbContext, UserId, ChatLogName);
+                    Console.WriteLine();
+                }
+                Application.Current.Shutdown();
+            });
         }
     }
 }

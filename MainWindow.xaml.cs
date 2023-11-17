@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 
@@ -36,9 +37,12 @@ namespace Customers_support_chat_bot
                 Application.Current.MainWindow.WindowState = WindowState.Normal;
         }
 
-        private void CloseButton_Click(Object sender, RoutedEventArgs e) 
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            if (this.DataContext != null)
+            {
+                ((dynamic)this.DataContext).Password = ((PasswordBox)sender).Password;
+            }
         }
     }
 }

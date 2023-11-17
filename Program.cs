@@ -12,7 +12,7 @@ using Microsoft.ML;
 class Program
 {
     // Function to create a new user with the given parameters and save to the database
-    private static int CreateUser(DbContext dbContext, string login, string password)
+    public static int CreateUser(DbContext dbContext, string login, string password)
     {
         // if login is already taken
         if (GetUser(dbContext, login) != null) return -1;
@@ -30,7 +30,7 @@ class Program
 
     // Save the log to the database and user, If User isn't in db or can't save log into db return -1 
     // return LogId if success
-    private static int CreateLog(DbContext dbContext,int userId, string logPath)
+    public static int CreateLog(DbContext dbContext,int userId, string logPath)
     {
         var user = User.FindById(dbContext, userId);
 
@@ -51,7 +51,7 @@ class Program
 
     // Save the chat to the database and user, If User isn't in db  or can't save chat into db return -1 
     // return ChatId if success
-    private static int CreateChat(DbContext dbContext, int userId, string chatPath)
+    public static int CreateChat(DbContext dbContext, int userId, string chatPath)
     {
         var user = User.FindById(dbContext, userId);
 
@@ -70,39 +70,39 @@ class Program
 
     // Get All logs from db for given userid, If User isn't in db return null,
     // If user hasn't got logs, return empty (i think)
-    private static IEnumerable<Log>? GetUserLogs(DbContext dbContext, int userId)
+    public static IEnumerable<Log>? GetUserLogs(DbContext dbContext, int userId)
     {
         return User.FindById(dbContext, userId)?.GetLogs();
     }
 
     // Get All chats from db for given userid, If User isn't in db return null,
     // If user hasn't got chats return empty (i think)
-    private static IEnumerable<Chat>? GetUserChats(DbContext dbContext, int userId)
+    public static IEnumerable<Chat>? GetUserChats(DbContext dbContext, int userId)
     {
         return User.FindById(dbContext, userId)?.GetChats();
     }
 
     // Get user by id
-    private static User? GetUser(DbContext dbContext, int userId)
+    public static User? GetUser(DbContext dbContext, int userId)
     {
         return User.FindById(dbContext, userId);
     }
     // Get user by login
-    private static User? GetUser(DbContext dbContext, string userLogin)
+    public static User? GetUser(DbContext dbContext, string userLogin)
     {
         return User.FindByLogin(dbContext, userLogin);
     }
-    private static Log? GetLog(DbContext dbContext, int logId)
+    public static Log? GetLog(DbContext dbContext, int logId)
     {
         return Log.FindById(dbContext, logId);
     }
-    private static Chat? GetChat(DbContext dbContext, int chatId)
+    public static Chat? GetChat(DbContext dbContext, int chatId)
     {
         return Chat.FindById(dbContext, chatId);
     }
 
     // Update parameter LastChangedAt to UtcNow, returns true or false if chat no exist
-    private static bool UpdateChat(DbContext dbContext, int chatId)
+    public static bool UpdateChat(DbContext dbContext, int chatId)
     {
         var chat = Chat.FindById(dbContext, chatId);
 
@@ -118,7 +118,7 @@ class Program
     }
 
     // Remove Log from db and user's collection, returns true or false
-    private static bool RemoveLog(DbContext dbContext, int logId)
+    public static bool RemoveLog(DbContext dbContext, int logId)
     {
         var log = Log.FindById(dbContext, logId);
 
@@ -134,7 +134,7 @@ class Program
     }
 
     // Remove Chat from db and user's collection, returns true or false
-    private static bool RemoveChat(DbContext dbContext, int chatId)
+    public static bool RemoveChat(DbContext dbContext, int chatId)
     {
         var chat = Chat.FindById(dbContext, chatId);
 
@@ -146,25 +146,6 @@ class Program
         else
         {
             return false; // User or Chat not found or couldn't be removed
-        }
-    }
-
-
-
-    static async Task Main(string[] args)
-    {
-        NLPModel model = new NLPModel();
-        Console.WriteLine("Type something:\n");
-        var userInput = Console.ReadLine();
-        IDocument processedInput = await model.Process(userInput is null ? "" : userInput);
-        Console.Write(processedInput.ToJson());
-
-        using (var context = new UserDbContext())
-        {
-            // to reset db entries from Context file uncomment line below:
-            // context.Database.EnsureDeleted();
-
-            context.Database.EnsureCreated();
         }
     }
 }
