@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Customers_support_chat_bot.Exceptions;
 
 namespace Customers_support_chat_bot
 {
@@ -70,15 +71,21 @@ namespace Customers_support_chat_bot
 
 
         // Here add API key
-        private OpenAIAPI _api = new OpenAIAPI(new APIAuthentication("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"));
+        private OpenAIAPI _api = new OpenAIAPI(new APIAuthentication(""));
         private OpenAI_API.Chat.Conversation _conversation { get;  }
         private ConversationHistory _conversationHistory { get; }
         public ChatGPTClient()
         {
-            this._conversation = this._api.Chat.CreateConversation();
-            this._conversationHistory = new ConversationHistory();
-
-            this._conversation.AppendSystemMessage("You are customers support. Never give general answers. You don't have particullar product or application you would respond for accordingly, therefor make up your answers. If you can't give made up answer say: \"I'm not able to help you with this problem. I will move your answer to administrators.\"");
+            try
+            {
+                this._conversation = this._api.Chat.CreateConversation();
+                this._conversationHistory = new ConversationHistory();
+                this._conversation.Model = OpenAI_API.Models.Model.ChatGPTTurbo;
+                this._conversation.AppendSystemMessage("You are customers support. Never give general answers. You don't have particullar product or application you would respond for accordingly, therefor make up your answers. If you can't give made up answer say: \"I'm not able to help you with this problem. I will move your answer to administrators.\"");
+            }catch (Exception e) 
+            {
+                throw new ChatGPTClientException("Exception thrown during ChatGPT client instantiation.", e);
+            }
         }
 
         public async Task<String> Ask(String question)
@@ -90,9 +97,9 @@ namespace Customers_support_chat_bot
                 this._conversationHistory.AddUserMessage(question);
                 response = await this._conversation.GetResponseFromChatbotAsync();
                 this._conversationHistory.AddBotMessage(response);
-            }catch (Exception ex)
+            }catch (Exception e)
             {
-                return ex.Message;
+                throw new ChatGPTClientException("Exception thrown during communication with remote ChatGPT service.", e);
             }
 
             return response;
