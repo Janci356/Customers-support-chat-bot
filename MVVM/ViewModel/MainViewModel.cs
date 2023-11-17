@@ -94,7 +94,7 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             
 
             DbContext = new UserDbContext();
-            //DbContext.Database.EnsureDeleted();
+            DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
 
             MessagesEnabled = false;
