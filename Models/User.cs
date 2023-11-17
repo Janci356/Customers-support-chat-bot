@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Customers_support_chat_bot.enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Customers_support_chat_bot.Models;
@@ -137,7 +138,7 @@ public class User
 
     // Method to add a log to the user's Logs collection and save to the database
     // returns LogId or -1
-    public int AddLogToUserAndDB(DbContext dbContext, Log newLog)
+    public int AddLogToUserAndDB(DbContext dbContext, Log newLog, LogTypeEnum logType)
     {
             // Set the user ID for the new log
             newLog.UserId = this.UserId;
@@ -145,7 +146,7 @@ public class User
             // Add the chat to the user's Chats collection
             Logs.Add(newLog);
         // Save into DB and return false or true
-        return newLog.SaveLog(dbContext);
+        return newLog.SaveLog(dbContext, logType);
 
     }
     // Saves Chat into DB and into Users collection Chats

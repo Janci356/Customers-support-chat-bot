@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Customers_support_chat_bot.enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Customers_support_chat_bot.Models;
@@ -8,7 +9,7 @@ public class Log
 {
     public int LogId { get; set; } // Primary key
 
-    public string? message { get; set; }
+    public string? Message { get; set; }
 
     public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -30,19 +31,30 @@ public class Log
     //----------------------------------------------------------------------------------------
     // SAVE LOG TO DB
 
-    public int SaveLog(DbContext dbContext)
+    public int SaveLog(DbContext dbContext, LogTypeEnum logType)
     {
         try
         {
             dbContext.Set<Log>().Add(this);
             dbContext.SaveChanges();
-            return this.LogId; // Assuming LogId is set by the database after insertion
+            switch (logType)
+            {
+                case LogTypeEnum.INFO:
+                    Logger.GetInstance().LogInformation(Message);
+                    break;
+                case LogTypeEnum.ERROR:
+                    Logger.GetInstance().LogError(Message);
+                    break;
+                default:
+                    Logger.GetInstance().LogInformation(Message);
+                    break;
+            }
+            return LogId; // Assuming LogId is set by the database after insertion
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Logger.GetInstance().LogInformation(e.Message);
             return -1;
         }
     }
-
-
 }

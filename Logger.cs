@@ -28,12 +28,12 @@ public class Logger
         return _instance;
     }
 
-    public void LogInformation(string message)
+    public void LogInformation(string? message)
     {
         Task.Run(() => _logger.Information(message));
     }
 
-    public void LogError(string message)
+    public void LogError(string? message)
     {
         Task.Run(() => _logger.Error(message));
     }

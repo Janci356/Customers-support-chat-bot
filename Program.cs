@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using System;
 using System.Linq;
+using Customers_support_chat_bot.enums;
 using Microsoft.ML;
 
 class Program
@@ -25,12 +26,13 @@ class Program
         };
 
         // Save the user to the database and return UserId or -1 if unsuccessful
+        Logger.GetInstance().LogError("skuska logu");
         return newUser.SaveUser(dbContext);
     }
 
     // Save the log to the database and user, If User isn't in db or can't save log into db return -1 
     // return LogId if success
-    public static int CreateLog(DbContext dbContext,int userId, string logPath)
+    public static int CreateLog(DbContext dbContext,int userId, string message, LogTypeEnum logType)
     {
         var user = User.FindById(dbContext, userId);
 
@@ -43,9 +45,9 @@ class Program
         // Create a new log
         Log newLog = new Log
         {
-            LogPath = logPath
+            Message = message
         };
-        return user.AddLogToUserAndDB(dbContext, newLog);        
+        return user.AddLogToUserAndDB(dbContext, newLog, logType);        
     }
 
 
