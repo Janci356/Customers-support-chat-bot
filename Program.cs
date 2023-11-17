@@ -26,7 +26,6 @@ class Program
         };
 
         // Save the user to the database and return UserId or -1 if unsuccessful
-        Logger.GetInstance().LogError("skuska logu");
         return newUser.SaveUser(dbContext);
     }
 
@@ -38,6 +37,7 @@ class Program
 
         if (user == null)
         {
+            
             //Console.WriteLine($"User with ID {userId} not found.");
             return -1; // or throw an exception, depending on your error handling strategy
         }
@@ -59,7 +59,10 @@ class Program
 
         if (user == null)
         {
-            //Console.WriteLine($"User with ID {userId} not found.");
+            new Log
+            {
+                Message = $"User with ID {userId} not found."
+            } .SaveLog(dbContext, LogTypeEnum.ERROR);
             return -1; // or throw an exception, depending on your error handling strategy
         }
         Chat newChat = new Chat
@@ -115,6 +118,10 @@ class Program
         }
         else
         {
+            new Log
+            {
+                Message = "Chat not found"
+            } .SaveLog(dbContext, LogTypeEnum.INFO);
             return false; // Chat not found
         }
     }
@@ -131,6 +138,10 @@ class Program
         }
         else
         {
+            new Log
+            {
+                Message = $"User or Log with {logId} not found or couldn't be removed"
+            } .SaveLog(dbContext, LogTypeEnum.INFO);
             return false; // User or Log not found or couldn't be removed
         }
     }
@@ -147,6 +158,10 @@ class Program
         }
         else
         {
+            new Log
+            {
+                Message = $"User or Chat with {chatId} not found or couldn't be removed"
+            } .SaveLog(dbContext, LogTypeEnum.INFO);
             return false; // User or Chat not found or couldn't be removed
         }
     }

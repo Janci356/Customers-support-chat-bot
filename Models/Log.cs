@@ -14,7 +14,7 @@ public class Log
     public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Foreign key property
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
 
     public virtual User User { get; set; } = null!;
 
@@ -35,8 +35,6 @@ public class Log
     {
         try
         {
-            dbContext.Set<Log>().Add(this);
-            dbContext.SaveChanges();
             switch (logType)
             {
                 case LogTypeEnum.INFO:
@@ -49,11 +47,13 @@ public class Log
                     Logger.GetInstance().LogInformation(Message);
                     break;
             }
+            dbContext.Set<Log>().Add(this);
+            dbContext.SaveChanges();
             return LogId; // Assuming LogId is set by the database after insertion
         }
         catch (Exception e)
         {
-            Logger.GetInstance().LogInformation(e.Message);
+            Logger.GetInstance().LogInformation("Error saving log: " + e.Message + " " + e.InnerException.Message);
             return -1;
         }
     }

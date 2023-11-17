@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
+using Customers_support_chat_bot.enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Customers_support_chat_bot.Models;
+
 public class Chat
 {
     public int ChatId { get; set; } // Primary key
@@ -47,10 +49,13 @@ public class Chat
             dbContext.SaveChanges();
             return this.ChatId; // Assuming ChatId is set by the database after insertion
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            new Log
+            {
+                Message = "Error saving chat to database: " + e.Message
+            } .SaveLog(dbContext, LogTypeEnum.ERROR);
             return -1;
         }
     }
 }
-

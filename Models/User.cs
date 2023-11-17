@@ -39,11 +39,15 @@ public class User
                 dbContext.SaveChanges();
                 return true;
             }
+
             return false;
-            
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            new Log
+            {
+                Message = "Error delete log and chat from user and db " + e.Message
+            } .SaveLog(dbContext, LogTypeEnum.ERROR);
             return false;
         }
     }
@@ -67,11 +71,15 @@ public class User
                 dbContext.SaveChanges();
                 return true;
             }
-            return false;
 
+            return false;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            new Log
+            {
+                Message = "Error delete a chat from the database and remove it from the user's collection " + e.Message
+            } .SaveLog(dbContext, LogTypeEnum.ERROR);
             return false;
         }
     }
@@ -93,7 +101,6 @@ public class User
     }
 
 
-
     //----------------------------------------------------------------------------------------
     // SAVE USER INTO DB
 
@@ -107,8 +114,12 @@ public class User
             dbContext.SaveChanges();
             return this.UserId; // Assuming UserId is set by the database after insertion
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            new Log
+            {
+                Message = "Error Save the user to the database " + e.Message
+            } .SaveLog(dbContext, LogTypeEnum.ERROR);
             return -1;
         }
     }
@@ -132,7 +143,6 @@ public class User
     }
 
 
-
     //----------------------------------------------------------------------------------------
     // ADD LOG AND CHAT TO USER AND DB
 
@@ -140,15 +150,15 @@ public class User
     // returns LogId or -1
     public int AddLogToUserAndDB(DbContext dbContext, Log newLog, LogTypeEnum logType)
     {
-            // Set the user ID for the new log
-            newLog.UserId = this.UserId;
+        // Set the user ID for the new log
+        newLog.UserId = this.UserId;
 
-            // Add the chat to the user's Chats collection
-            Logs.Add(newLog);
+        // Add the chat to the user's Chats collection
+        Logs.Add(newLog);
         // Save into DB and return false or true
         return newLog.SaveLog(dbContext, logType);
-
     }
+
     // Saves Chat into DB and into Users collection Chats
     // if not success returns -1, else ChatId
     public int AddChatToUserAndDB(DbContext dbContext, Chat newChat)
@@ -163,5 +173,4 @@ public class User
         // Save into DB and return false or true
         return newChat.SaveChat(dbContext);
     }
-
 }

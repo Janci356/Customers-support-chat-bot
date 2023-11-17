@@ -18,7 +18,8 @@ public class UserDbContext : DbContext
         modelBuilder.Entity<Log>()
         .HasOne(l => l.User)
         .WithMany(u => u.Logs)
-        .HasForeignKey(l => l.UserId);
+        .HasForeignKey(l => l.UserId)
+        .IsRequired(false);
         modelBuilder.Entity<Chat>()
             .HasOne(c => c.User)
             .WithMany(u => u.Chats)

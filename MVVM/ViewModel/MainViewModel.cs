@@ -7,6 +7,8 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
+using Customers_support_chat_bot.enums;
+using Customers_support_chat_bot.Models;
 
 namespace Customers_support_chat_bot.MVVM.ViewModel
 {
@@ -142,13 +144,17 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                         }
                         else
                         {
-                            //TODO
-                            //Log exception
+                            new Log
+                            {
+                                Message = ex.Message
+                            }.SaveLog(DbContext, LogTypeEnum.ERROR);
                         }
                     }catch(Exception ex)
                     {
-                        //TODO
-                        //Log Exception
+                        new Log
+                        {
+                            Message = "chyba pri \n " + ex.Message
+                        }.SaveLog(DbContext, LogTypeEnum.ERROR);
                     }
                     gettingResponse= false;
                     
@@ -164,8 +170,10 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                         UserId = Program.CreateUser(DbContext, Username, Password);
                         if (UserId == -1)
                         {
-                            // TODO
-                            // User already exists
+                            new Log
+                            {
+                                Message = "User already exists"
+                            } .SaveLog(DbContext, LogTypeEnum.INFO);
                         }
                         else
                         {
@@ -177,8 +185,10 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                             ChatLogFile.AutoFlush = true;
                         }
                     }catch (Exception ex) {
-                        //TODO
-                        // Log exception
+                        new Log
+                        {
+                            Message = "Error while preparing chat " + ex.Message
+                        } .SaveLog(DbContext, LogTypeEnum.ERROR);
                     }
                     
                 }
@@ -195,8 +205,10 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                         Console.WriteLine();
                     }
                     catch (Exception ex) { 
-                        //TODO 
-                        //Log exception
+                        new Log
+                        {
+                            Message = "Create chat error " + ex.Message
+                        } .SaveLog(DbContext, LogTypeEnum.ERROR);
                     }
                     
                     
