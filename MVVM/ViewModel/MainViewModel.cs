@@ -27,6 +27,12 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
 
         public RelayCommand CloseCommand { get; set; }
 
+        public RelayCommand SwitchToSignupCommand { get; set; } 
+
+        public RelayCommand SwitchToLoginCommand { get; set; }  
+
+        public RelayCommand SignupCommand { get; set; } 
+
 
         private string _message;
 
@@ -62,6 +68,17 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             }
         }
 
+        private Visibility _signupVisibility;
+
+        public Visibility SignupVisibility
+        {
+            get { return _signupVisibility; }
+            set { 
+                _signupVisibility = value;
+                OnPropertyChanged("SignupVisibility");
+            }
+        }
+
         private Visibility _loggedIn;
 
         public Visibility LoggedIn
@@ -73,13 +90,37 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             }
         }
 
-        public String Username { get; set; }
+        private Visibility _errorVisiblity;
+
+        public Visibility ErrorVisibility
+        {
+            get { return _errorVisiblity; }
+            set {
+                _errorVisiblity = value;
+                OnPropertyChanged("ErrorVisibility");
+            }
+        }
+
+
+        public String? Username { get; set; }
 
         public String Password { private get; set; }
 
         public int UserId { get; set; }
 
         public String ChatLogName { get; set; }
+
+        private String _error;
+
+        public String Error
+        {
+            get { return _error; }
+            set {
+                _error = value;
+                OnPropertyChanged("Error");
+            }
+        }
+
 
 
         public MainViewModel()
@@ -92,16 +133,39 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             
 
             DbContext = new UserDbContext();
-            DbContext.Database.EnsureDeleted();
+          //  DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
 
             MessagesEnabled = false;
             LoginVisibility = Visibility.Visible;
             LoggedIn = Visibility.Hidden;
+            SignupVisibility = Visibility.Hidden;
+            ErrorVisibility = Visibility.Collapsed;
+            bool gettingResponse = false;
+
+            SwitchToLoginCommand = new RelayCommand(o =>
+            {
+                Username = "";
+                Password = "";
+                Error = "";
+                ErrorVisibility = Visibility.Collapsed;
+                LoginVisibility = Visibility.Visible;
+                SignupVisibility = Visibility.Hidden;
+            });
+
+            SwitchToSignupCommand = new RelayCommand(o =>
+            {
+                Username = "";
+                Password = "";
+                Error = "";
+                ErrorVisibility = Visibility.Collapsed;
+                LoginVisibility = Visibility.Hidden;
+                SignupVisibility = Visibility.Visible;
+            });
 
             SendCommand = new RelayCommand(async o =>
             {
-                if(Message != "" && Message != null)
+                if(Message != "" && Message != null && !gettingResponse)
                 {
                     var NewMessage = new MessageModel
                     {
@@ -114,48 +178,82 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                     };
 
                     Messages.Add(NewMessage);
-
-                    var response = await Client.Ask(Message);
-
-                    if(response.Contains("code: TooManyRequests"))
-                    {
-                        var StartIndex = response.IndexOf("\"message\": \"") + 12;
-                        var EndIndex = response.IndexOf("\"", StartIndex);
-                        var Msg = response.Substring(StartIndex, EndIndex - StartIndex);
-                        var BotMessage = new MessageModel
-                        {
-                            Username = "ChatBot",
-                            ImageSource = "./Icons/bot.png",
-                            Message = Msg,
-                            Time = DateTime.Now,
-                            IsNativeOrigin = false,
-                            FirstMessage = true
-                        };
-                        Messages.Add(BotMessage);
-                    }
-
                     Message = "";
+                    gettingResponse = true;
+                    try
+                    {
+                        var response = await Client.Ask(Message);
+                    }catch(ChatGPTClientException ex)
+                    {
+                        if (ex.Message.Contains("code: TooManyRequests"))
+                        {
+                            var StartIndex = ex.Message.IndexOf("\"message\": \"") + 12;
+                            var EndIndex = ex.Message.IndexOf("\"", StartIndex);
+                            var Msg = ex.Message.Substring(StartIndex, EndIndex - StartIndex);
+                            var BotMessage = new MessageModel
+                            {
+                                Username = "ChatBot",
+                                ImageSource = "./Icons/bot.png",
+                                Message = Msg,
+                                Time = DateTime.Now,
+                                IsNativeOrigin = false,
+                                FirstMessage = true
+                            };
+                            Messages.Add(BotMessage);
+                        }
+                        else
+                        {
+                            new Log
+                            {
+                                Message = ex.Message
+                            }.SaveLog(DbContext, LogTypeEnum.ERROR);
+                        }
+                    }catch(Exception ex)
+                    {
+                        new Log
+                        {
+                            Message = "chyba pri \n " + ex.Message
+                        }.SaveLog(DbContext, LogTypeEnum.ERROR);
+                    }
+                    gettingResponse= false;
+                    
                 }
             });
 
-            LoginCommand = new RelayCommand(o =>
+            SignupCommand = new RelayCommand(o =>
             {
-            if (!String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Password)) 
-                { 
-                    UserId = Program.CreateUser(DbContext, Username, Password); 
-                    if(UserId == -1)
+            if (!String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Password))
+                {
+                    try
                     {
-                        // TODO
+                        UserId = Program.CreateUser(DbContext, Username, Password);
+                        if (UserId == -1)
+                        {
+                            Error = "User with this username already exists";
+                            ErrorVisibility = Visibility.Visible;
+                            new Log
+                            {
+                                Message = "User already exists"
+                            } .SaveLog(DbContext, LogTypeEnum.INFO);
+                        }
+                        else
+                        {
+                            Error = "";
+                            ErrorVisibility = Visibility.Hidden;
+                            SignupVisibility = Visibility.Hidden;
+                            LoggedIn = Visibility.Visible;
+                            MessagesEnabled = true;
+                            ChatLogName = "./ChatLogs/" + Username + "_" + UserId + "_" + DateTime.Now.Ticks + ".json";
+                            ChatLogFile = File.CreateText(ChatLogName);
+                            ChatLogFile.AutoFlush = true;
+                        }
+                    }catch (Exception ex) {
+                        new Log
+                        {
+                            Message = "Error while preparing chat " + ex.Message
+                        } .SaveLog(DbContext, LogTypeEnum.ERROR);
                     }
-                    else
-                    {
-                        LoginVisibility = Visibility.Hidden;
-                        LoggedIn = Visibility.Visible;
-                        MessagesEnabled = true;
-                        ChatLogName = "./ChatLogs/" + Username + "_" + UserId + "_" + DateTime.Now.Ticks + ".json";
-                        ChatLogFile = File.CreateText(ChatLogName);
-                        ChatLogFile.AutoFlush = true;
-                    }
+                    
                 }
             });
 
@@ -164,8 +262,18 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                 if(ChatLogFile != null && Messages.Count != 0)
                 {
                     ChatLogFile.Write(JsonSerializer.Serialize(Messages));
-                    var response = Program.CreateChat(DbContext, UserId, ChatLogName);
-                    Console.WriteLine();
+                    try
+                    {
+                        var response = Program.CreateChat(DbContext, UserId, ChatLogName);
+                    }
+                    catch (Exception ex) { 
+                        new Log
+                        {
+                            Message = "Create chat error " + ex.Message
+                        } .SaveLog(DbContext, LogTypeEnum.ERROR);
+                    }
+                    
+                    
                 }
                 Application.Current.Shutdown();
             });

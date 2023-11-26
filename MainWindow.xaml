@@ -113,6 +113,13 @@
                              />
                 </Border>
 
+                <TextBlock Text="{Binding Error}"
+                       Visibility="{Binding ErrorVisibility}"
+                       Foreground="Red"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                           TextWrapping="WrapWithOverflow"
+                           TextAlignment="Center"/>
 
                 <Button Content="Login"
                     VerticalAlignment="Center"
@@ -124,6 +131,27 @@
                     Cursor="Hand"
                     Command="{Binding LoginCommand}"
                     />
+
+                <StackPanel>
+                    <Label Content="Don't have an account?"
+                           Foreground="Gray"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           />
+                    <Label Content="Signup"
+                           Foreground="White"
+                           FontWeight="Bold"
+                           VerticalAlignment="center"
+                           HorizontalAlignment="center"
+                           Margin="0 -10 0 -10"
+                           Cursor="Hand"
+                           >
+                        <Label.InputBindings>
+                            <MouseBinding Gesture="Leftclick" Command="{Binding SwitchToSignupCommand}"/>
+                        </Label.InputBindings>
+                    </Label>
+                </StackPanel>
             </StackPanel>
 
             <StackPanel Visibility="{Binding LoggedIn}">
@@ -140,6 +168,86 @@
                            />
                 </StackPanel>
                 
+            </StackPanel>
+
+            <StackPanel Visibility="{Binding SignupVisibility}">
+                <Label Content="Username"
+                       Foreground="White"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       Margin="10, 0, 10, 0"/>
+                <Border CornerRadius="4"
+                        Height="20"
+                        Background="#3e4147"
+                        Margin="10, 0, 10, 0">
+                                    <TextBox Foreground="White"
+                             Text="{Binding Username}"
+                             Background="Transparent"
+                             VerticalAlignment="Center"
+                             BorderThickness="0"
+                             Padding="4, 0, 4, 0"
+                             CaretBrush="White"/>
+                </Border>
+
+
+
+                <Label Content="Password"
+                       Foreground="White"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       Margin="10, 0, 10, 0"/>
+                <Border CornerRadius="4"
+                        Height="20"
+                        Background="#3e4147"
+                        Margin="10, 0, 10, 0">
+                <PasswordBox Foreground="White"
+                             PasswordChanged="PasswordBox_PasswordChanged"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             VerticalAlignment="Center"
+                             Padding="4, 0, 4, 0"
+                             CaretBrush="White"/>
+                </Border>
+
+                <TextBlock Text="{Binding Error}"
+                           TextWrapping="WrapWithOverflow"
+                           Visibility="{Binding ErrorVisibility}"
+                           Foreground="Red"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"/>
+
+                <Button Content="Signup"
+                        VerticalAlignment="Center"
+                        FontWeight="Medium"
+                        Foreground="White"
+                        Padding="0, 5, 0, 5"
+                        Background="#36393F"
+                        Margin="10, 5, 10, 5"
+                        Cursor="Hand"
+                        Command="{Binding SignupCommand}"
+                        />
+
+                <StackPanel>
+                    <Label Content="Already have an account?"
+                           Foreground="Gray"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           />
+                    <Label Content="Login"
+                           Foreground="White"
+                           FontWeight="Bold"
+                           VerticalAlignment="center"
+                           HorizontalAlignment="center"
+                           Margin="0 -10 0 -10"
+                           Cursor="Hand"
+                           >
+                        <Label.InputBindings>
+                            <MouseBinding Gesture="Leftclick" Command="{Binding SwitchToLoginCommand}"/>
+                        </Label.InputBindings>
+                    </Label>
+                </StackPanel>
             </StackPanel>
         </Grid>
 
