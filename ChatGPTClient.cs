@@ -82,7 +82,7 @@ namespace Customers_support_chat_bot
             this._conversation = this._api.Chat.CreateConversation();
             this._conversationHistory = new ConversationHistory();
                 this._conversation.Model = OpenAI_API.Models.Model.ChatGPTTurbo;
-            this._conversation.AppendSystemMessage("You are customers support. Never give general answers. You don't have particullar product or application you would respond for accordingly, therefor make up your answers. If you can't give made up answer say: \"I'm not able to help you with this problem. I will move your answer to administrators.\"");
+            this._conversation.AppendSystemMessage("You are customers support assistant.");
             }catch (Exception e) 
             {
                 throw new ChatGPTClientException("Exception thrown during ChatGPT client instantiation.", e);

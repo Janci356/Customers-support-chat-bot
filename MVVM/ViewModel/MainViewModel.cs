@@ -124,6 +124,17 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                     try
                     {
                         var response = await Client.Ask(Message);
+                        var NewMessageBot = new MessageModel
+                        {
+                            Username = "ChatBot",
+                            ImageSource = "./Icons/bot.png",
+                            Message = response,
+                            Time = DateTime.Now,
+                            IsNativeOrigin = true,
+                            FirstMessage = true
+                        };
+                        Messages.Add(NewMessageBot);
+
                     }catch(ChatGPTClientException ex)
                     {
                         if (ex.Message.Contains("code: TooManyRequests"))
