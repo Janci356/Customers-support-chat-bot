@@ -13,4 +13,4 @@ namespace Customers_support_chat_bot.Exceptions
         public DBException(string message) : base(message) { }
         public DBException(string message, Exception inner) : base(message, inner) { }
     }
-}s
+}

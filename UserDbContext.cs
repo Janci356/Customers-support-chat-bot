@@ -1,4 +1,5 @@
-﻿using Customers_support_chat_bot.Models;
+﻿using Customers_support_chat_bot.Exceptions;
+using Customers_support_chat_bot.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Customers_support_chat_bot;
@@ -41,13 +42,20 @@ public class UserDbContext : DbContext
             .IsUnique();
 
         // starting values:
-        var users = new List<User>
+        try
         {
-            new User { UserId = 1, Login = "Meat", Password = "111", CreatedAt = DateTime.UtcNow },
-            new User { UserId = 2, Login = "Fish", Password = "111", CreatedAt = DateTime.UtcNow },
-            new User { UserId = 3, Login = "Cheese", Password = "111", CreatedAt = DateTime.UtcNow }
-        };
+            var users = new List<User>
+            {
+                new User { UserId = 1, Login = "Meat", Password = "111", CreatedAt = DateTime.UtcNow },
+                new User { UserId = 2, Login = "Fish", Password = "111", CreatedAt = DateTime.UtcNow },
+                new User { UserId = 3, Login = "Cheese", Password = "111", CreatedAt = DateTime.UtcNow }
+            };
 
-        modelBuilder.Entity<User>().HasData(users);
+            modelBuilder.Entity<User>().HasData(users);
+        }
+        catch (Exception ex)
+        {
+            throw new DBException(ex.Message);
+        }
     }
 }
