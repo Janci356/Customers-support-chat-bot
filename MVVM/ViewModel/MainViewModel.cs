@@ -31,6 +31,12 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
 
         public RelayCommand CloseCommand { get; set; }
 
+        public RelayCommand SwitchToSignupCommand { get; set; } 
+
+        public RelayCommand SwitchToLoginCommand { get; set; }  
+
+        public RelayCommand SignupCommand { get; set; } 
+
 
         private string _message;
 
@@ -66,6 +72,17 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             }
         }
 
+        private Visibility _signupVisibility;
+
+        public Visibility SignupVisibility
+        {
+            get { return _signupVisibility; }
+            set { 
+                _signupVisibility = value;
+                OnPropertyChanged("SignupVisibility");
+            }
+        }
+
         private Visibility _loggedIn;
 
         public Visibility LoggedIn
@@ -77,13 +94,37 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             }
         }
 
+        private Visibility _errorVisiblity;
+
+        public Visibility ErrorVisibility
+        {
+            get { return _errorVisiblity; }
+            set {
+                _errorVisiblity = value;
+                OnPropertyChanged("ErrorVisibility");
+            }
+        }
+
+
         public String? Username { get; set; }
 
-        public String? Password { private get; set; }
+        public String Password { private get; set; }
 
         public int UserId { get; set; }
 
         public String? ChatLogName { get; set; }
+
+        private String _error;
+
+        public String Error
+        {
+            get { return _error; }
+            set {
+                _error = value;
+                OnPropertyChanged("Error");
+            }
+        }
+
 
 
         public MainViewModel()
@@ -96,13 +137,35 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             
 
             DbContext = new UserDbContext();
-            DbContext.Database.EnsureDeleted();
+          //  DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
 
             MessagesEnabled = false;
             LoginVisibility = Visibility.Visible;
             LoggedIn = Visibility.Hidden;
+            SignupVisibility = Visibility.Hidden;
+            ErrorVisibility = Visibility.Collapsed;
             bool gettingResponse = false;
+
+            SwitchToLoginCommand = new RelayCommand(o =>
+            {
+                Username = "";
+                Password = "";
+                Error = "";
+                ErrorVisibility = Visibility.Collapsed;
+                LoginVisibility = Visibility.Visible;
+                SignupVisibility = Visibility.Hidden;
+            });
+
+            SwitchToSignupCommand = new RelayCommand(o =>
+            {
+                Username = "";
+                Password = "";
+                Error = "";
+                ErrorVisibility = Visibility.Collapsed;
+                LoginVisibility = Visibility.Hidden;
+                SignupVisibility = Visibility.Visible;
+            });
 
             SendCommand = new RelayCommand(async o =>
             {
@@ -172,7 +235,7 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                 }
             });
 
-            LoginCommand = new RelayCommand(o =>
+            SignupCommand = new RelayCommand(o =>
             {
             if (!String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Password))
                 {
@@ -181,6 +244,8 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                         UserId = Program.CreateUser(DbContext, Username, Password);
                         if (UserId == -1)
                         {
+                            Error = "User with this username already exists";
+                            ErrorVisibility = Visibility.Visible;
                             new Log
                             {
                                 Message = "User already exists"
@@ -188,7 +253,9 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                         }
                         else
                         {
-                            LoginVisibility = Visibility.Hidden;
+                            Error = "";
+                            ErrorVisibility = Visibility.Hidden;
+                            SignupVisibility = Visibility.Hidden;
                             LoggedIn = Visibility.Visible;
                             MessagesEnabled = true;
                             ChatLogName = "./ChatLogs/" + Username + "_" + UserId + "_" + DateTime.Now.Ticks + ".json";
@@ -213,7 +280,6 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                     try
                     {
                         var response = Program.CreateChat(DbContext, UserId, ChatLogName);
-                        Console.WriteLine();
                     }
                     catch (Exception ex) { 
                         new Log
