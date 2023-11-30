@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using Customers_support_chat_bot.enums;
 using Customers_support_chat_bot.Models;
+using OpenAI_API.Moderation;
 
 namespace Customers_support_chat_bot.MVVM.ViewModel
 {
@@ -137,7 +138,7 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
             
 
             DbContext = new UserDbContext();
-          //  DbContext.Database.EnsureDeleted();
+            //DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
 
             MessagesEnabled = false;
@@ -254,7 +255,7 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                         else
                         {
                             Error = "";
-                            ErrorVisibility = Visibility.Hidden;
+                            ErrorVisibility = Visibility.Collapsed;
                             SignupVisibility = Visibility.Hidden;
                             LoggedIn = Visibility.Visible;
                             MessagesEnabled = true;
@@ -267,6 +268,44 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                         {
                             Message = "Error while preparing chat " + ex.Message
                         } .SaveLog(DbContext, LogTypeEnum.ERROR);
+                    }
+                    
+                }
+            });
+
+            LoginCommand = new RelayCommand(o =>
+            {
+                if (!String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Password))
+                {
+                    try
+                    {
+                        bool result = Program.LoginUser(DbContext, Username, Password);
+                        if (result)
+                        {
+                            Error = "";
+                            ErrorVisibility = Visibility.Collapsed;
+                            LoginVisibility = Visibility.Hidden;
+                            LoggedIn = Visibility.Visible;
+                            MessagesEnabled = true;
+                            ChatLogName = "./ChatLogs/" + Username + "_" + DateTime.Now.Ticks + ".json";
+                            ChatLogFile = File.CreateText(ChatLogName);
+                            ChatLogFile.AutoFlush = true;
+                        }
+                        else
+                        {
+                            Error = "Wrong username or password";
+                            ErrorVisibility = Visibility.Visible;
+                            new Log
+                            {
+                                Message = "Wrong username or password"
+                            }.SaveLog(DbContext, LogTypeEnum.INFO);
+                        }
+                    }catch(Exception ex)
+                    {
+                        new Log
+                        {
+                            Message = "Error while preparing chat " + ex.Message
+                        }.SaveLog(DbContext, LogTypeEnum.ERROR);
                     }
                     
                 }
