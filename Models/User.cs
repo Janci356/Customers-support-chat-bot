@@ -12,6 +12,8 @@ public class User
 
     public string Password { get; set; }
 
+    public string Salt { get; set; }
+
     public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual ICollection<Log> Logs { get; } = new HashSet<Log>();

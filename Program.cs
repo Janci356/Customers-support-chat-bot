@@ -12,17 +12,54 @@ using Microsoft.ML;
 
 class Program
 {
-    // Function to create a new user with the given parameters and save to the database
+    // Function takes string password, hashes it and compares to password from db
+    public static bool VerifyPasswordHash(string password, string storedHash, string storedSalt)
+    {
+        byte[] storedHashBytes = Convert.FromBase64String(storedHash);
+        byte[] storedSaltBytes = Convert.FromBase64String(storedSalt);
+
+        using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSaltBytes))
+        {
+            byte[] computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
+            if (storedHashBytes.Length != computedHash.Length) return false;
+
+            // Compare the computed hash with the stored hash
+            for (int i = 0; i < computedHash.Length; i++)
+            {
+                if (computedHash[i] != storedHashBytes[i])
+                    return false;
+            }
+
+            return true;
+        }
+    }
+    // Function creates hash and salt from string password and saves the hash to db
+    public static void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)
+    {
+        using (var hmac = new System.Security.Cryptography.HMACSHA512())
+        {
+            passwordSalt = Convert.ToBase64String(hmac.Key);
+            passwordHash = Convert.ToBase64String(hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)));
+        }
+    }
+
+    // Function to create a new user with the given parameters and save to the database with hashed password
     public static int CreateUser(DbContext dbContext, string login, string password)
     {
         // if login is already taken
         if (GetUser(dbContext, login) != null) return -1;
 
+        var hashPass = "";
+        var salt = "";
+        CreatePasswordHash(password, out hashPass, out salt);
+
         // Create a new user
         User newUser = new User
         {
             Login = login,
-            Password = password,
+            Password = hashPass,
+            Salt = salt
         };
 
         // Save the user to the database and return UserId or -1 if unsuccessful
@@ -71,6 +108,24 @@ class Program
         };
 
         return user.AddChatToUserAndDB(dbContext, newChat);
+    }
+
+
+    public static bool LoginUser(DbContext dbContext, string login, string password)
+    {
+        var user = User.FindByLogin(dbContext, login);
+        var hashPass = "";
+        var salt = "";
+
+        //hash password even if user doesn't exist
+        var hash_password = password;
+
+        if (user != null)
+        {
+            hashPass = user.Password;
+            salt = user.Salt;
+        }
+        return VerifyPasswordHash(password, hashPass, salt);
     }
 
     // Get All logs from db for given userid, If User isn't in db return null,
