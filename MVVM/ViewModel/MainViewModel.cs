@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Input;
 using Customers_support_chat_bot.enums;
 using Customers_support_chat_bot.Models;
+using Customers_support_chat_bot.Themes;
+using Microsoft.EntityFrameworkCore;
 using OpenAI_API.Moderation;
 
 namespace Customers_support_chat_bot.MVVM.ViewModel
@@ -50,6 +52,7 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                 OnPropertyChanged();
             }
         }
+        
 
         private bool _messagesEnabled;
 
@@ -279,8 +282,8 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                 {
                     try
                     {
-                        bool result = Program.LoginUser(DbContext, Username, Password);
-                        if (result)
+                        User? user = Program.LoginUser(DbContext, Username, Password);
+                        if (user != null)
                         {
                             Error = "";
                             ErrorVisibility = Visibility.Collapsed;
@@ -290,6 +293,11 @@ namespace Customers_support_chat_bot.MVVM.ViewModel
                             ChatLogName = "./ChatLogs/" + Username + "_" + DateTime.Now.Ticks + ".json";
                             ChatLogFile = File.CreateText(ChatLogName);
                             ChatLogFile.AutoFlush = true;
+                            if (user.IsAdmin)
+                            {
+                                var adminWindow = new AdminPage();
+                                adminWindow.Show();
+                            }
                         }
                         else
                         {

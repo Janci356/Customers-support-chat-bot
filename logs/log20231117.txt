@@ -1,1 +1,22 @@
 {"Timestamp":"2023-11-17T18:31:59.2448128+01:00","Level":"Error","MessageTemplate":"skuska logu"}
+
+{"Timestamp":"2023-11-17T20:21:56.5465139+01:00","Level":"Information","MessageTemplate":"An error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T20:22:38.9368685+01:00","Level":"Information","MessageTemplate":"An error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T20:28:04.7550839+01:00","Level":"Information","MessageTemplate":"An error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T20:29:37.8259038+01:00","Level":"Information","MessageTemplate":"Tu je chyba?\nAn error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T20:31:41.6232246+01:00","Level":"Information","MessageTemplate":"Tu je chyba? \n Customers_support_chat_bot.Models.LogAn error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T20:32:34.7703067+01:00","Level":"Information","MessageTemplate":"Tu je chyba? \n Customers_support_chat_bot.Models.LogAn error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T20:33:38.2698592+01:00","Level":"Information","MessageTemplate":"Tu je chyba? \n Customers_support_chat_bot.Models.LogAn error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T20:58:50.2002314+01:00","Level":"Information","MessageTemplate":"This is a log message"}
+{"Timestamp":"2023-11-17T21:17:41.3349221+01:00","Level":"Information","MessageTemplate":"This is a log message"}
+{"Timestamp":"2023-11-17T21:17:41.4356317+01:00","Level":"Information","MessageTemplate":"Chyba pri ukladaní logu \n An error occurred while saving the entity changes. See the inner exception for details. \n SQLite Error 19: 'FOREIGN KEY constraint failed'."}
+{"Timestamp":"2023-11-17T21:17:41.4518527+01:00","Level":"Error","MessageTemplate":"Chyba pri ukladaní usera do databázy An error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T21:17:41.4533719+01:00","Level":"Information","MessageTemplate":"Chyba pri ukladaní logu \n An error occurred while saving the entity changes. See the inner exception for details. \n SQLite Error 19: 'FOREIGN KEY constraint failed'."}
+{"Timestamp":"2023-11-17T21:21:48.0364677+01:00","Level":"Information","MessageTemplate":"This is a log message"}
+{"Timestamp":"2023-11-17T21:21:48.0372015+01:00","Level":"Information","MessageTemplate":"Chyba pri ukladaní logu \n An error occurred while saving the entity changes. See the inner exception for details. \n SQLite Error 19: 'FOREIGN KEY constraint failed'."}
+{"Timestamp":"2023-11-17T21:21:48.0377731+01:00","Level":"Error","MessageTemplate":"Chyba pri ukladaní usera do databázy An error occurred while saving the entity changes. See the inner exception for details."}
+{"Timestamp":"2023-11-17T21:21:48.0382165+01:00","Level":"Information","MessageTemplate":"Chyba pri ukladaní logu \n An error occurred while saving the entity changes. See the inner exception for details. \n SQLite Error 19: 'FOREIGN KEY constraint failed'."}
+{"Timestamp":"2023-11-17T21:22:01.5290930+01:00","Level":"Information","MessageTemplate":"This is a log message"}
+{"Timestamp":"2023-11-17T21:28:44.8742856+01:00","Level":"Information","MessageTemplate":"This is a log message"}
+{"Timestamp":"2023-11-17T21:29:00.2197064+01:00","Level":"Information","MessageTemplate":"Chyba pri ukladaní logu \n An error occurred while saving the entity changes. See the inner exception for details. \n SQLite Error 19: 'NOT NULL constraint failed: Logs.UserId'."}
+{"Timestamp":"2023-11-17T21:32:28.6747787+01:00","Level":"Information","MessageTemplate":"This is a log message"}

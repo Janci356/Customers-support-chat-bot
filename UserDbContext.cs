@@ -48,9 +48,11 @@ public class UserDbContext : DbContext
             {
                 // "heslo"
             new User { UserId = 1, Login = "Meat",
+                IsAdmin = true,
                 Password = "AAFsdQfjQSD2PImTtSrPQ82xm0YYkIQA4OwkHtYTR4WifSaCKT56Rp81UyOA74CYj9uFq5Ss5VUMoJ0SwBIGlg==",
                 Salt = "NE7s45Ismfn0njMsHg/Up8euy01182UwnQc2ReVfFSJvseBwqri2jwmPOpqlC1pCDIkfj/rIBo3NT3lJv08mhdqt/qMxyDK8bx1qK4NxSdtyHdBq73/dtAf4tEyhN6WtLiSKM9N3nftGVjglAUKzJzAvqpQJixchnicNSMDRSbk=",
-                CreatedAt = DateTime.UtcNow },
+                CreatedAt = DateTime.UtcNow
+            },
             // "heslo1"
             new User { UserId = 2, Login = "Fish",
                 Password = "X1dAsDLKz84UrAw8Wzxs52G6c3DEosBLiDnecNq7j3bUpMf4QIs8FdfViNIHXd41OUMqI0Nl8AuwBxrDpy9gAg==",
@@ -62,8 +64,11 @@ public class UserDbContext : DbContext
                 Salt = "sJI+JrLmi1373AWUiD5NJN1n8Z98axHMG87fVnWq/cc/HltzJ9F+x7DYJr/fp6AZ/zLh+zaZFPY/rqeei5PvqVHh0z97v9Jec2YZWfAnQYAACfwW/pqF2KR3+uEMAxWDb0NnZJiehEHdLV2MVdN6pHmJ6g6Xc9WpfLcWPb75Yjw=",
                 CreatedAt = DateTime.UtcNow }
             };
+            
 
             modelBuilder.Entity<User>().HasData(users);
+            
+            
         }
         catch (Exception ex)
         {

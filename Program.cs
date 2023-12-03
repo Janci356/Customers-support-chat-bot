@@ -1,5 +1,4 @@
-﻿
-using Catalyst;
+﻿using Catalyst;
 using Customers_support_chat_bot;
 using Customers_support_chat_bot.Models;
 using HtmlAgilityPack;
@@ -34,6 +33,7 @@ class Program
             return true;
         }
     }
+
     // Function creates hash and salt from string password and saves the hash to db
     public static void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)
     {
@@ -68,13 +68,12 @@ class Program
 
     // Save the log to the database and user, If User isn't in db or can't save log into db return -1 
     // return LogId if success
-    public static int CreateLog(DbContext dbContext,int userId, string message, LogTypeEnum logType)
+    public static int CreateLog(DbContext dbContext, int userId, string message, LogTypeEnum logType)
     {
         var user = User.FindById(dbContext, userId);
 
         if (user == null)
         {
-            
             //Console.WriteLine($"User with ID {userId} not found.");
             return -1; // or throw an exception, depending on your error handling strategy
         }
@@ -84,7 +83,7 @@ class Program
         {
             Message = message
         };
-        return user.AddLogToUserAndDB(dbContext, newLog, logType);        
+        return user.AddLogToUserAndDB(dbContext, newLog, logType);
     }
 
 
@@ -99,9 +98,10 @@ class Program
             new Log
             {
                 Message = $"User with ID {userId} not found."
-            } .SaveLog(dbContext, LogTypeEnum.ERROR);
+            }.SaveLog(dbContext, LogTypeEnum.ERROR);
             return -1; // or throw an exception, depending on your error handling strategy
         }
+
         Chat newChat = new Chat
         {
             ChatPath = chatPath
@@ -111,7 +111,7 @@ class Program
     }
 
 
-    public static bool LoginUser(DbContext dbContext, string login, string password)
+    public static User? LoginUser(DbContext dbContext, string login, string password)
     {
         var user = User.FindByLogin(dbContext, login);
         var hashPass = "";
@@ -125,7 +125,10 @@ class Program
             hashPass = user.Password;
             salt = user.Salt;
         }
-        return VerifyPasswordHash(password, hashPass, salt);
+
+        if (VerifyPasswordHash(password, hashPass, salt))
+            return user;
+        return null;
     }
 
     // Get All logs from db for given userid, If User isn't in db return null,
@@ -147,15 +150,18 @@ class Program
     {
         return User.FindById(dbContext, userId);
     }
+
     // Get user by login
     public static User? GetUser(DbContext dbContext, string userLogin)
     {
         return User.FindByLogin(dbContext, userLogin);
     }
+
     public static Log? GetLog(DbContext dbContext, int logId)
     {
         return Log.FindById(dbContext, logId);
     }
+
     public static Chat? GetChat(DbContext dbContext, int chatId)
     {
         return Chat.FindById(dbContext, chatId);
@@ -176,7 +182,7 @@ class Program
             new Log
             {
                 Message = "Chat not found"
-            } .SaveLog(dbContext, LogTypeEnum.INFO);
+            }.SaveLog(dbContext, LogTypeEnum.INFO);
             return false; // Chat not found
         }
     }
@@ -196,7 +202,7 @@ class Program
             new Log
             {
                 Message = $"User or Log with {logId} not found or couldn't be removed"
-            } .SaveLog(dbContext, LogTypeEnum.INFO);
+            }.SaveLog(dbContext, LogTypeEnum.INFO);
             return false; // User or Log not found or couldn't be removed
         }
     }
@@ -216,7 +222,7 @@ class Program
             new Log
             {
                 Message = $"User or Chat with {chatId} not found or couldn't be removed"
-            } .SaveLog(dbContext, LogTypeEnum.INFO);
+            }.SaveLog(dbContext, LogTypeEnum.INFO);
             return false; // User or Chat not found or couldn't be removed
         }
     }

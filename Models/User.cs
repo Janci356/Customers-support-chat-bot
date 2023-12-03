@@ -6,6 +6,7 @@ namespace Customers_support_chat_bot.Models;
 
 public class User
 {
+
     public int UserId { get; set; } // Primary key
 
     public string Login { get; set; }
@@ -13,7 +14,9 @@ public class User
     public string Password { get; set; }
 
     public string Salt { get; set; }
-
+    
+    public bool IsAdmin { get; set; }
+    
     public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual ICollection<Log> Logs { get; } = new HashSet<Log>();
